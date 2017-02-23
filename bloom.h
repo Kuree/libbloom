@@ -140,6 +140,21 @@ void bloom_print(struct bloom * bloom);
 void bloom_free(struct bloom * bloom);
 
 
+
+void bloom_load(
+        struct bloom * bloom,
+        unsigned char *bits, 
+        size_t bytes, 
+        int entries, 
+        double error);
+
+unsigned char* bloom_dump(
+        struct bloom * bloom,
+        unsigned char *bits, 
+        size_t * bytes,  
+        int * entries);
+
+
 /** ***************************************************************************
  * Returns version string compiled into library.
  *

@@ -20,7 +20,7 @@
 #   make clean          the usual
 #
 
-BLOOM_VERSION=1.4dev
+BLOOM_VERSION=1.5dev
 
 TOP := $(shell /bin/pwd)
 BUILD_OS := $(shell uname)
@@ -75,13 +75,13 @@ $(BUILD)/libbloom.a: $(BUILD)/murmurhash2.o $(BUILD)/bloom.o
 	(cd $(BUILD) && ar rcs libbloom.a bloom.o murmurhash2.o)
 
 $(BUILD)/test-libbloom: $(TESTDIR)/test.c $(BUILD)/libbloom.$(SO)
-	$(COM) -I$(TOP) -c $(TESTDIR)/test.c -o $(BUILD)/test.o
+	$(COM) -I$(TOP) -c $(TESTDIR)/test.c -o $(BUILD)/test.o 
 	(cd $(BUILD) && \
 	    $(COM) test.o -L$(BUILD) $(RPATH) -lbloom -o test-libbloom)
 
 $(BUILD)/test-basic: $(TESTDIR)/basic.c $(BUILD)/libbloom.a
-	$(COM) -I$(TOP) $(LIB) \
-	    $(TESTDIR)/basic.c $(BUILD)/libbloom.a -o $(BUILD)/test-basic
+	$(COM) -I$(TOP)\
+	    $(TESTDIR)/basic.c $(BUILD)/libbloom.a -o $(BUILD)/test-basic $(LIB) 
 
 $(BUILD)/%.o: %.c
 	mkdir -p $(BUILD)

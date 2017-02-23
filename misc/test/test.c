@@ -217,6 +217,53 @@ static int larger_tests()
   return rv;
 }
 
+void test_load_dump(){
+    char *string1 = "hello";
+    char *string2 = "world";
+    char *string3 = "sup";
+    char* string4 = "yo";
+
+    double ERROR = 0.01;
+    struct bloom bloom;
+    bloom_init(&bloom, 128, ERROR);
+
+    bloom_add(&bloom, string1, strlen(string1));
+    bloom_add(&bloom, string2, strlen(string2));
+    bloom_add(&bloom, string3, strlen(string3));
+
+    assert(bloom_check(&bloom, string1, strlen(string1)) == 1);
+    assert(bloom_check(&bloom, string2, strlen(string2)) == 1);
+    assert(bloom_check(&bloom, string3, strlen(string3)) == 1);
+    assert(bloom_check(&bloom, string4, strlen(string4)) == 0);
+    
+    unsigned char buf[1024];
+    size_t bytes;
+    int entries;
+    bloom_dump(&bloom, buf, &bytes, &entries);
+
+    struct bloom test;
+    bloom_load(&test, buf, bytes, entries, ERROR);
+
+
+    assert(bloom_check(&test, string1, strlen(string1)) == 1);
+    assert(bloom_check(&test, string2, strlen(string2)) == 1);
+    assert(bloom_check(&test, string3, strlen(string3)) == 1);
+    assert(bloom_check(&test, string4, strlen(string4)) == 0);
+ 
+    assert(bloom.entries == test.entries);
+    assert(bloom.error == test.error);
+    assert(bloom.bits == test.bits);
+    assert(bloom.bytes == test.bytes);
+    assert(bloom.hashes == test.hashes);
+    assert(bloom.bpe == test.bpe);
+    assert(bloom.ready == test.ready);
+    
+    assert(memcmp(bloom.bf, test.bf, bloom.bytes) == 0);
+    
+    bloom_free(&bloom);
+    bloom_free(&test);
+}
+
 
 /** ***************************************************************************
  * With no options, runs brief default tests.
@@ -243,6 +290,8 @@ int main(int argc, char **argv)
   // Calls return() instead of exit() just to make valgrind mark as
   // an error any reachable allocations. That makes them show up
   // when running the tests.
+  printf("----- Testing dump and load -----\n");
+  test_load_dump();
 
   int rv = 0;
 
