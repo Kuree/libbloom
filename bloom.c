@@ -83,6 +83,10 @@ int bloom_init_size(struct bloom * bloom, int entries, double error,
 
 int bloom_init(struct bloom * bloom, int entries, double error)
 {
+    return bloom_init_buf(bloom, entries, error, NULL);
+}
+
+int bloom_init_buf(struct bloom *bloom, int entries, double error, unsigned char *buf){
     bloom->ready = 0;
 
     if (entries < 1 || error == 0) {
@@ -107,15 +111,20 @@ int bloom_init(struct bloom * bloom, int entries, double error)
 
     bloom->hashes = (int)ceil(0.693147180559945 * bloom->bpe);  // ln(2)
 
-    bloom->bf = (unsigned char *)calloc(bloom->bytes, sizeof(unsigned char));
+    if(buf) {
+        bloom->bf = buf; // caller need to make sure it has enough space
+        memset(bloom->bf, 0, bloom->bytes);
+    }
+    else
+        bloom->bf = (unsigned char *)calloc(bloom->bytes, sizeof(unsigned char));
     if (bloom->bf == NULL) {
         return 1;
     }
 
     bloom->ready = 1;
     return 0;
-}
 
+}
 
 int bloom_check(struct bloom * bloom, const void * buffer, int len)
 {
@@ -149,6 +158,9 @@ void bloom_free(struct bloom * bloom)
     bloom->ready = 0;
 }
 
+void bloom_reset(struct bloom *bloom){
+    memset(bloom->bf, 0, bloom->bytes);
+}
 
 void bloom_load(
         struct bloom * bloom,

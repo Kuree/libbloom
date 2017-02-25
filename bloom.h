@@ -68,6 +68,9 @@ struct bloom
 int bloom_init(struct bloom * bloom, int entries, double error);
 
 
+int bloom_init_buf(struct bloom *bloom, int entries, double error, unsigned char *buf);
+
+
 /** ***************************************************************************
  * Deprecated, use bloom_init()
  *
@@ -140,6 +143,7 @@ void bloom_print(struct bloom * bloom);
 void bloom_free(struct bloom * bloom);
 
 
+void bloom_reset(struct bloom *bloom);
 
 void bloom_load(
         struct bloom * bloom,
