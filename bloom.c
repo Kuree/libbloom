@@ -26,6 +26,9 @@
 #define MAKESTRING(n) STRING(n)
 #define STRING(n) #n
 
+#ifndef BLOOM_VERSION
+#define BLOOM_VERSION 1.5dev
+#endif
 
 inline static int test_bit_set_bit(unsigned char * buf,
         unsigned int x, int set_bit)
